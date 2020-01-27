@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Variables
+rgName="e-paas-rg"
+location="japaneast"
+repoName="epaasrepo"
+containerName="e-paas-aci"
+acrServer="$repoName.azurecr.io"
+image=myapp
+dnsName=mydnsname
+registryPassword=$(az acr credential show --name $repoName --query passwords[0].value -o tsv)
+
+# Create resource group.
+az group create --name $rgName --location $location
+
+# Create azure container instances.
+az container create --resource-group $rgName --location $location --name $containerName --image $acrServer/$image:v1 \
+  --dns-name-label $dnsName \
+  --ip-address Public \
+  --registry-login-server $acrServer \
+  --registry-username $repoName \
+  --registry-password $registryPassword \
+  --cpu 1 \
+  --memory 1 \
+  --ports 80 \
+  --restart-policy Always
+
+# Show container FQDN.
+az container show --resource-group $rgName --name $containerName --query ipAddress.fqdn
+
+# Examine the logs for a container in a container group.
+az container logs --resource-group $rgName --name $containerName
+
+# Delete azure container instances.
+az container delete --resource-group $rgName --name $containerName --yes

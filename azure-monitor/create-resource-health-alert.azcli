@@ -1,0 +1,22 @@
+# Variables
+rgName="e-paas-rg"
+location="japaneast"
+ruleName="Resource-Health-Alert"
+actionGroupName="SampleAG"
+subscriptionId=$(az account list --query [].id -o tsv)
+
+# Create resource group.
+az group create --name $rgName --location $location
+
+# Create activity log alert.
+az monitor activity-log alert create --resource-group $rgName \
+  --name $ruleName \
+  --action-group $actionGroupName \
+  --condition category=ResourceHealth and level=critical and status=active \
+  --scope /subscriptions/$subscriptionId
+
+# Show
+az monitor activity-log alert show --resource-group $rgName --name $ruleName -o table
+
+# Delete
+az monitor activity-log alert delete --resource-group $rgName --name $ruleName

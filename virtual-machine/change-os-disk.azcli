@@ -1,0 +1,8 @@
+#!bin/bash
+rgName=w-iaas-rg
+vmName=w-iaas-vm-01
+osDisk=xxx
+
+az disk list -g $rgName --output table
+az vm stop -g $rgName -n $vmName
+az vm update -g $rgName -n $vmName --os-disk $osDisk

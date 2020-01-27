@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Variables
+rgName="e-paas-rg"
+location="japaneast"
+repoName="epaasrepo"
+sku="Basic"
+acrServer="$repoName.azurecr.io"
+image=myapp
+
+# Create resource group.
+az group create --name $rgName --location $location
+
+# Create azure container registory.
+az acr create --resource-group $rgName --name $repoName --sku $sku --admin-enabled true
+
+# Show
+az acr show --resource-group $rgName --name $repoName -o table
+
+# Login to acr.
+az acr login --name $repoName
+
+# Build docker image at acr.
+az acr build --registry $repoName --image $image:v1 .
+
+# List repositories in acr.
+az acr repository list --name $repoName -o table
+
+# manifests	Show manifests of a repository in acr.
+az acr repository show-manifests --name $repoName --repository $image
+
+# Delete docker image.
+az acr repository delete --name $repoName --image $image:v1 --yes
+
+# Delete azure container registory.
+az acr delete --resource-group $rgName --name $repoName
