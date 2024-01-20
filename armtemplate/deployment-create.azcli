@@ -1,0 +1,15 @@
+# Variables
+RESOURCE_GROUP="my-resource-group"
+LOCATION="japaneast"
+DEPLOYMENT_NAME="my-deployment"
+TEMPLATE_FILE="path/to/template.json"
+PARAMETERS_FILE="path/to/parameters.json"
+
+# Create Resource Group
+az group create --name $RESOURCE_GROUP --location $LOCATION
+
+# Deploy ARM template to Resource Group
+az group deployment create --name $DEPLOYMENT_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --template-file $TEMPLATE_FILE \
+  --parameters $PARAMETERS_FILE
